@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { trackJobApplication } from '$lib/services/analytics.js';
 
   let assignment = null;
   let loading = true;
@@ -9,12 +10,26 @@
   let submitting = false;
   let revisionNotes = '';
   let showRevisionForm = false;
+  let currentUser = null;
+  let applying = false;
 
   $: assignmentId = $page.params.id;
+  $: isOwner = currentUser && assignment && currentUser.id === assignment.user_id;
+  $: canApply = currentUser && assignment && assignment.status === 'pending' && !isOwner;
 
   onMount(async () => {
-    await loadAssignment();
+    await Promise.all([loadAssignment(), checkSession()]);
   });
+
+  async function checkSession() {
+    try {
+      const response = await fetch('/api/auth/session');
+      const data = await response.json();
+      currentUser = data.user || null;
+    } catch (err) {
+      currentUser = null;
+    }
+  }
 
   async function loadAssignment() {
     loading = true;
@@ -33,6 +48,41 @@
       error = err.message;
     } finally {
       loading = false;
+    }
+  }
+
+  async function handleApply() {
+    if (!currentUser) {
+      goto(`/auth/login?redirectTo=/jobs/${assignmentId}`);
+      return;
+    }
+
+    applying = true;
+    try {
+      const response = await fetch('/api/job-applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ job_id: assignmentId })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to apply for job');
+      }
+
+      // Track job application
+      trackJobApplication({
+        jobId: assignmentId,
+        applicantId: currentUser.id
+      });
+
+      alert('Application submitted successfully!');
+      await loadAssignment();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      applying = false;
     }
   }
 
@@ -119,13 +169,23 @@
           <span class="status">{formatStatus(assignment.status)}</span>
         </div>
         <div class="header-actions">
-          {#if assignment.status === 'pending'}
+          {#if assignment.status === 'pending' && isOwner}
             <button on:click={() => goto(`/jobs/${assignmentId}/edit`)} class="btn-primary">
               ✏️ Edit Job
             </button>
+          {:else if assignment.status === 'pending' && !isOwner}
+            {#if currentUser}
+              <button on:click={handleApply} class="btn-primary" disabled={applying}>
+                {applying ? 'Applying...' : '📝 Apply for Job'}
+              </button>
+            {:else}
+              <button on:click={() => goto(`/auth/login?redirectTo=/jobs/${assignmentId}`)} class="btn-primary">
+                🔐 Login to Apply
+              </button>
+            {/if}
           {/if}
-          <button on:click={() => goto('/jobs')} class="btn-secondary">
-            Back to List
+          <button on:click={() => goto('/browse-jobs')} class="btn-secondary">
+            Browse Jobs
           </button>
         </div>
       </div>

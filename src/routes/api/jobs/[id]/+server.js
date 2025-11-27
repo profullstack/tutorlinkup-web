@@ -18,17 +18,25 @@ import {
 export async function GET({ params, locals }) {
   try {
     const session = locals.session;
-    if (!session?.user) {
-      return json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const job = await getJobRequestById(params.id);
     
     if (!job) {
       return json({ error: 'Job not found' }, { status: 404 });
     }
 
-    // Check if user has access to this job
+    // Public jobs (pending status) can be viewed by anyone
+    // This allows potential applicants to see job details
+    if (job.status === 'pending') {
+      // Return public job data (exclude sensitive fields if needed)
+      return json({ job });
+    }
+
+    // For non-pending jobs, require authentication
+    if (!session?.user) {
+      return json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Check if user has access to this job (owner or assigned)
     if (
       job.user_id !== session.user.id &&
       job.assigned_to !== session.user.id
