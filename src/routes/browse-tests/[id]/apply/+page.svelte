@@ -7,6 +7,24 @@
   let test = null;
   let loading = true;
   let error = '';
+  let currentUser = null;
+
+  async function checkSession() {
+    try {
+      const response = await fetch('/api/auth/session');
+      const data = await response.json();
+      currentUser = data.user || null;
+      
+      if (!currentUser) {
+        goto(`/auth/login?ref=/browse-tests/${$page.params.id}/apply`);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      goto(`/auth/login?ref=/browse-tests/${$page.params.id}/apply`);
+      return false;
+    }
+  }
 
   async function loadTest() {
     loading = true;
@@ -66,8 +84,11 @@
     goto(`/browse-tests/${$page.params.id}`);
   }
 
-  onMount(() => {
-    loadTest();
+  onMount(async () => {
+    const isAuthenticated = await checkSession();
+    if (isAuthenticated) {
+      loadTest();
+    }
   });
 </script>
 

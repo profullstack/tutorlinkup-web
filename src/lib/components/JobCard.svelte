@@ -55,7 +55,7 @@
 
   function handleApplyClick() {
     if (!session) {
-      goto('/login?redirect=/browse-jobs');
+      goto('/auth/login?ref=/browse-jobs');
       return;
     }
     showApplicationModal = true;

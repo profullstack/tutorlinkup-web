@@ -53,7 +53,7 @@
 
   async function handleApply() {
     if (!currentUser) {
-      goto(`/auth/login?redirectTo=/jobs/${assignmentId}`);
+      goto(`/auth/login?ref=/jobs/${assignmentId}`);
       return;
     }
 
@@ -179,7 +179,7 @@
                 {applying ? 'Applying...' : '📝 Apply for Job'}
               </button>
             {:else}
-              <button on:click={() => goto(`/auth/login?redirectTo=/jobs/${assignmentId}`)} class="btn-primary">
+              <button on:click={() => goto(`/auth/login?ref=/jobs/${assignmentId}`)} class="btn-primary">
                 🔐 Login to Apply
               </button>
             {/if}
