@@ -1,4 +1,6 @@
 <script>
+  import { trackRatingSubmitted } from '$lib/services/analytics.js';
+
   export let testId = '';
   export let testTakerId = '';
   export let onSubmit = () => {};
@@ -22,6 +24,13 @@
 
     try {
       await onSubmit({ testId, testTakerId, rating, review });
+      
+      // Track rating submission
+      trackRatingSubmitted({
+        targetUserId: testTakerId,
+        rating,
+        jobId: testId
+      });
     } catch (err) {
       error = err.message || 'Failed to submit rating';
     } finally {

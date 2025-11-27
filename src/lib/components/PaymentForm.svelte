@@ -1,11 +1,12 @@
 <script>
   /**
    * PaymentForm Component
-   * 
+   *
    * Form for initiating a cryptocurrency payment
    */
   
   import { createEventDispatcher } from 'svelte';
+  import { trackInitiateCheckout } from '$lib/services/analytics.js';
   
   export let testId = '';
   export let testTakerId = '';
@@ -32,6 +33,13 @@
       error = 'Wallet address is required';
       return;
     }
+
+    // Track checkout initiation
+    trackInitiateCheckout({
+      productId: testId,
+      amount,
+      currency: 'USD'
+    });
     
     dispatch('submit', {
       testId,

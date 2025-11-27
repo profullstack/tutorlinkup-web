@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher, onMount } from 'svelte';
   import PriceInput from './PriceInput.svelte';
+  import { trackJobCreated } from '$lib/services/analytics.js';
 
   export let assignment = null;
   export let isEdit = false;
@@ -91,6 +92,16 @@
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to save assignment');
+      }
+
+      // Track job creation (only for new jobs, not edits)
+      if (!isEdit && data.request) {
+        trackJobCreated({
+          jobId: data.request.id,
+          title: data.request.title,
+          category: jobType,
+          budget: parseFloat(price)
+        });
       }
 
       dispatch('success', data.request);

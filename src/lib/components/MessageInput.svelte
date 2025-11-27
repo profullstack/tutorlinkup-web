@@ -1,7 +1,10 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { trackMessageSent } from '$lib/services/analytics.js';
 
   export let disabled = false;
+  export let conversationId = '';
+  export let recipientId = '';
 
   let message = '';
   const dispatch = createEventDispatcher();
@@ -12,6 +15,9 @@
     if (message.trim() === '') {
       return;
     }
+
+    // Track message sent
+    trackMessageSent({ conversationId, recipientId });
 
     dispatch('send', { content: message.trim() });
     message = '';

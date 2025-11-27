@@ -1,13 +1,14 @@
 <script>
   /**
    * Profile Edit Page
-   * 
+   *
    * Allows users to edit their profile information
    */
   
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import AvatarUpload from '$lib/components/AvatarUpload.svelte';
+  import { trackProfileUpdate } from '$lib/services/analytics.js';
   
   let profile = $state(null);
   let loading = $state(true);
@@ -79,6 +80,13 @@
       }
       
       profile = data.profile;
+      
+      // Track profile update
+      trackProfileUpdate({
+        userId: profile.id,
+        fieldsUpdated: Object.keys(formData)
+      });
+      
       success = 'Profile updated successfully!';
       
       setTimeout(() => {

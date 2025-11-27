@@ -1,12 +1,13 @@
 <script>
   /**
    * Signup Page
-   * 
+   *
    * User registration page using AuthForm component.
    */
 
   import { goto } from '$app/navigation';
   import AuthForm from '$lib/components/AuthForm.svelte';
+  import { trackSignup } from '$lib/services/analytics.js';
 
   async function handleSignup({ email, password }) {
     const response = await fetch('/api/auth/signup', {
@@ -20,6 +21,9 @@
     const data = await response.json();
 
     if (data.success) {
+      // Track successful signup
+      trackSignup({ email });
+
       // Redirect to login or home after successful signup
       setTimeout(() => {
         goto('/auth/login');

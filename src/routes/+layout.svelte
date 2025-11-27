@@ -9,6 +9,7 @@
   import UserDropdown from '$lib/components/UserDropdown.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import NavBar from '$lib/components/NavBar.svelte';
+  import { identifyUser } from '$lib/services/analytics.js';
 
   let user = $state(null);
 
@@ -22,7 +23,17 @@
     try {
       const response = await fetch('/api/auth/session');
       const data = await response.json();
-      user = data.user || null;
+      const newUser = data.user || null;
+      
+      // Identify user for analytics when they log in
+      if (newUser && (!user || user.id !== newUser.id)) {
+        identifyUser({
+          userId: newUser.id,
+          email: newUser.email
+        });
+      }
+      
+      user = newUser;
     } catch (err) {
       console.error('Failed to load session:', err);
       user = null;

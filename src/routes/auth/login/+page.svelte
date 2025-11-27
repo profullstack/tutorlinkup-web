@@ -8,6 +8,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import AuthForm from '$lib/components/AuthForm.svelte';
+  import { trackLogin } from '$lib/services/analytics.js';
 
   // Get redirect URL from query params
   $: redirectTo = $page.url.searchParams.get('redirectTo') || '/';
@@ -31,6 +32,9 @@
           error: data.error || 'Failed to log in'
         };
       }
+
+      // Track successful login
+      trackLogin({ email, method: 'email' });
 
       // Redirect to the original page or home after successful login
       setTimeout(() => {
