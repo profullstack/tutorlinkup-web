@@ -11,6 +11,21 @@
 <svelte:head>
   <title>TutorLinkup.com - Marketplace for Test Taking Services</title>
   <meta name="description" content="Connect with qualified test takers or offer your test-taking services. Secure cryptocurrency payments." />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://tutorlinkup.com/" />
+  <meta property="og:title" content="TutorLinkup.com - Marketplace for Test Taking Services" />
+  <meta property="og:description" content="Connect with qualified test takers or offer your test-taking services. Secure cryptocurrency payments." />
+  <meta property="og:image" content="https://tutorlinkup.com/banner.png" />
+  <meta property="og:site_name" content="TutorLinkup" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://tutorlinkup.com/" />
+  <meta name="twitter:title" content="TutorLinkup.com - Marketplace for Test Taking Services" />
+  <meta name="twitter:description" content="Connect with qualified test takers or offer your test-taking services. Secure cryptocurrency payments." />
+  <meta name="twitter:image" content="https://tutorlinkup.com/banner.png" />
 </svelte:head>
 
 <div class="container">
