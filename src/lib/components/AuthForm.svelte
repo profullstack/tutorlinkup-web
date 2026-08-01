@@ -136,6 +136,8 @@
     max-width: 400px;
     margin: 0 auto;
     padding: 2rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .form-group {
@@ -156,6 +158,7 @@
     border-radius: 0.375rem;
     font-size: 1rem;
     transition: border-color 0.2s;
+    box-sizing: border-box;
   }
 
   input:focus {
@@ -171,6 +174,7 @@
 
   .btn {
     width: 100%;
+    display: block;
     padding: 0.75rem;
     border: none;
     border-radius: 0.375rem;
@@ -210,5 +214,11 @@
     background-color: #d1fae5;
     color: #065f46;
     border: 1px solid #a7f3d0;
+  }
+  @media (max-width: 768px) {
+    .auth-form {
+      padding: 1rem;
+      box-sizing: border-box;
+    }
   }
 </style>
