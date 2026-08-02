@@ -227,7 +227,7 @@
     justify-content: center;
     margin-top: var(--spacing-xl);
     flex-wrap: wrap;
-    position: absolute;
+    position: relative;
     z-index: 1;
   }
 
