@@ -35,10 +35,16 @@ export async function POST({ params, request, locals }) {
 
     const supabase = locals.supabase;
 
+    // Sanitize the test ID to prevent path traversal (e.g. '..', '/')
+    const sanitizedTestId = String(testId).replace(/[^a-zA-Z0-9_-]/g, '_');
+    if (!sanitizedTestId) {
+      return json({ error: 'Invalid test id' }, { status: 400 });
+    }
+
     // Generate unique file path
     const timestamp = Date.now();
     const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const filePath = `${session.user.id}/${testId}/${timestamp}_${sanitizedFileName}`;
+    const filePath = `${session.user.id}/${sanitizedTestId}/${timestamp}_${sanitizedFileName}`;
 
     // Upload to storage
     const { data: uploadData, error: uploadError } = await supabase.storage
@@ -61,7 +67,7 @@ export async function POST({ params, request, locals }) {
     const { data: attachment, error: dbError } = await supabase
       .from('test_attachments')
       .insert({
-        test_id: testId,
+        test_id: sanitizedTestId,
         file_name: file.name,
         file_path: uploadData.path,
         file_size: file.size,
