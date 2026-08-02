@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '../supabaseClient.js';
+import { sanitizeSearchTerm } from '../utils/search.js';
 
 /**
  * Create a new resource
@@ -173,7 +174,7 @@ export async function searchResources(query, filters = {}) {
     return [];
   }
 
-  const searchTerm = query.toLowerCase();
+  const searchTerm = sanitizeSearchTerm(query.toLowerCase());
 
   let dbQuery = supabase
     .from('resources')

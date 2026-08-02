@@ -6,6 +6,7 @@
  */
 
 import { getSupabaseClient } from '../supabaseClient.js';
+import { sanitizeSearchTerm } from '../utils/search.js';
 
 const VALID_CRYPTOCURRENCIES = ['BTC', 'ETH', 'DOGE', 'SOL'];
 const PROTECTED_FIELDS = ['id', 'hirer_id', 'created_at'];
@@ -323,11 +324,12 @@ export async function searchTests(query, supabase) {
   }
 
   const client = supabase || getSupabaseClient();
+  const searchTerm = sanitizeSearchTerm(query);
 
   const { data, error } = await client
     .from('tests')
     .select('*')
-    .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+    .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
     .eq('status', 'open')
     .order('created_at', { ascending: false });
 
