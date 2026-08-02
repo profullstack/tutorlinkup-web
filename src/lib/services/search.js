@@ -6,6 +6,7 @@
  */
 
 import { getSupabaseClient } from '../supabaseClient.js';
+import { sanitizeSearchTerm } from '../utils/search.js';
 
 /**
  * Valid service types
@@ -28,7 +29,7 @@ export async function searchAllServices(query, filters = {}) {
   }
 
   const supabase = getSupabaseClient();
-  const searchTerm = query.trim();
+  const searchTerm = sanitizeSearchTerm(query.trim());
   const results = [];
 
   // If type filter is specified, only search that type
