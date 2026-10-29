@@ -1,6 +1,6 @@
 {
   "name": "tutorlinkup-web",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A marketplace platform connecting test hirers with test takers, featuring cryptocurrency payments",
   "type": "module",
   "private": true,
@@ -59,6 +59,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "@profullstack/contact-form": "0.3.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.39.0",
     "pdf-parse": "^2.1.7",
