@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@profullstack/contact-form':
-        specifier: 0.3.0
-        version: 0.3.0
+        specifier: 0.4.0
+        version: 0.4.0
       '@supabase/ssr':
         specifier: ^0.7.0
         version: 0.7.0(@supabase/supabase-js@2.58.0)
@@ -738,8 +738,8 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@profullstack/contact-form@0.3.0':
-    resolution: {integrity: sha512-62O5dj6tp6y76hfLPkTQG5MALRT1TkNg/T2FhZjU4QviKf7/ft5GULaKSPzgaR938oHk8JSmPC/JiahTfrdiUA==}
+  '@profullstack/contact-form@0.4.0':
+    resolution: {integrity: sha512-PTVc0f8bymQR3CT25Vmu30zk0GU4UtBLaJ7TO4waGfs40ygg2uAC5Bh8igpATvonpN//tLpdPHEBbC7fEnUQ4w==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -2980,7 +2980,7 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@profullstack/contact-form@0.3.0':
+  '@profullstack/contact-form@0.4.0':
     dependencies:
       '@profullstack/emailer': 1.0.3
       '@profullstack/form-guard': 0.3.0
