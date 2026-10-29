@@ -1,13 +1,17 @@
 <script>
+  /** guardHtml: the token + honeypot inputs; sent/error: a plain (no-JS) post's result. */
+  export let data;
+
+  let form;
   let name = '';
   let email = '';
   let subject = '';
   let message = '';
-  let submitted = false;
-  let error = '';
+  let submitted = !!data.sent;
+  let sending = false;
+  let error = data.error ?? '';
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit() {
     error = '';
 
     if (!name || !email || !subject || !message) {
@@ -15,9 +19,28 @@
       return;
     }
 
-    // Here you would typically send to an API endpoint
-    // For now, just show success message
-    submitted = true;
+    sending = true;
+    try {
+      // POST /api/contact (@profullstack/contact-form): JSON in, JSON out,
+      // { success: true } or { error } with a 4xx/5xx status. FormData picks
+      // up the token and honeypot inputs from data.guardHtml.
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.ok) {
+        submitted = true;
+        name = email = subject = message = '';
+      } else {
+        error = result.error ?? 'Something went wrong. Please try again.';
+      }
+    } catch {
+      error = 'Something went wrong. Please try again.';
+    } finally {
+      sending = false;
+    }
   }
 </script>
 
@@ -66,32 +89,46 @@
           </button>
         </div>
       {:else}
-        <form on:submit={handleSubmit} class="contact-form">
+        <!-- Without JavaScript this is a plain post to /api/contact, which
+             sends it back here with ?sent=1 or ?error=<code>. -->
+        <form
+          bind:this={form}
+          method="post"
+          action="/api/contact"
+          on:submit|preventDefault={handleSubmit}
+          class="contact-form"
+        >
+          <!-- The token and the honeypot. The honeypot is off-canvas (.cf-hp)
+               rather than display:none, because some bots skip fields they can
+               tell are not rendered. guardHtml is built server-side from a fixed
+               template and a signed token; nothing in it comes from a visitor. -->
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html data.guardHtml}
           <div class="form-group">
             <label for="name">Name</label>
-            <input type="text" id="name" bind:value={name} required />
+            <input type="text" id="name" name="name" bind:value={name} autocomplete="name" maxlength="120" required />
           </div>
 
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" bind:value={email} required />
+            <input type="email" id="email" name="email" bind:value={email} autocomplete="email" maxlength="254" required />
           </div>
 
           <div class="form-group">
             <label for="subject">Subject</label>
-            <input type="text" id="subject" bind:value={subject} required />
+            <input type="text" id="subject" name="subject" bind:value={subject} maxlength="200" required />
           </div>
 
           <div class="form-group">
             <label for="message">Message</label>
-            <textarea id="message" bind:value={message} rows="6" required></textarea>
+            <textarea id="message" name="message" bind:value={message} rows="6" maxlength="5000" required></textarea>
           </div>
 
           {#if error}
             <div class="error">{error}</div>
           {/if}
 
-          <button type="submit" class="btn-primary">Send Message</button>
+          <button type="submit" class="btn-primary" disabled={sending}>Send Message</button>
         </form>
       {/if}
     </div>
@@ -261,5 +298,13 @@
     h1 {
       font-size: 2rem;
     }
+  }
+
+  :global(.cf-hp) {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
   }
 </style>
