@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@profullstack/ai-providers':
+        specifier: 0.1.2
+        version: 0.1.2
       '@profullstack/contact-form':
         specifier: 0.4.0
         version: 0.4.0
@@ -737,6 +740,11 @@ packages:
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
+
+  '@profullstack/ai-providers@0.1.2':
+    resolution: {integrity: sha512-nOcKaOhfcDM+RNruA4+znva5xXxI4HF77iqUCgieuou2w8yY8LIF2p5ajSVD4kzFtfIUjC7GhGV8eyOrliHg1w==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   '@profullstack/contact-form@0.4.0':
     resolution: {integrity: sha512-PTVc0f8bymQR3CT25Vmu30zk0GU4UtBLaJ7TO4waGfs40ygg2uAC5Bh8igpATvonpN//tLpdPHEBbC7fEnUQ4w==}
@@ -2979,6 +2987,8 @@ snapshots:
     optional: true
 
   '@polka/url@1.0.0-next.29': {}
+
+  '@profullstack/ai-providers@0.1.2': {}
 
   '@profullstack/contact-form@0.4.0':
     dependencies:

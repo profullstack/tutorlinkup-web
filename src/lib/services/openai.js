@@ -1,3 +1,5 @@
+import { getAi } from '@profullstack/ai-providers';
+
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
@@ -37,6 +39,40 @@ export async function callOpenAI(systemPrompt, userMessage, maxTokens = 1000) {
   } catch (error) {
     console.error('OpenAI API Error:', error);
     throw new Error(`Failed to process request: ${error.message}`);
+  }
+}
+
+/**
+ * c0mpute first (peer inference via @profullstack/ai-providers), then the
+ * original OpenAI call as the paid fallback.
+ *
+ * Only for prompts that carry no private user text: c0mpute jobs run on peer
+ * nodes. The paraphrase, grammar and summarize tools send the user's own
+ * writing and stay on OpenAI.
+ * @param {string} systemPrompt
+ * @param {string} userMessage
+ * @param {number} maxTokens
+ * @returns {Promise<string>}
+ */
+export async function callAI(systemPrompt, userMessage, maxTokens = 1000) {
+  try {
+    const { value } = await getAi().run(async (p) => {
+      if (p.name === 'openai') {return callOpenAI(systemPrompt, userMessage, maxTokens);}
+      const out = await p.generate({
+        system: systemPrompt,
+        user: userMessage,
+        maxTokens,
+        temperature: 0.7,
+        // c0mpute writes a few tokens a second; a long essay takes minutes.
+        timeoutMs: 900_000
+      });
+      if (!out.text?.trim()) {throw new Error(`Empty answer from ${p.name}`);}
+      return out.text;
+    });
+    return value;
+  } catch (error) {
+    const last = error?.attempts?.at(-1)?.error;
+    throw new Error(last?.message || error.message);
   }
 }
 
@@ -91,5 +127,5 @@ export async function summarizeText(text) {
  */
 export async function generateEssay(topic, wordCount = 500) {
   const systemPrompt = `You are an academic essay writing assistant. Write a well-structured essay of approximately ${wordCount} words on the given topic. Include an introduction, body paragraphs with supporting arguments, and a conclusion.`;
-  return callOpenAI(systemPrompt, topic, Math.ceil(wordCount * 1.5));
+  return callAI(systemPrompt, topic, Math.ceil(wordCount * 1.5));
 }
